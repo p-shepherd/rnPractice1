@@ -1,47 +1,40 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, TextInput, View, ScrollView, FlatList } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View, ScrollView, FlatList, SafeAreaView } from 'react-native';
 import React, { useState } from 'react';
-export default function App() {
 
-  const [enteredGoal, setEnteredGoal] = useState('');
+import GoalItem from './components/GoalItem';
+import GoalInput from './components/GoalInput';
+
+export default function App() {
+  
   const [goals, setGoals] = useState([]);
 
-  const handleInputChange = (text) => {
-    setEnteredGoal(text);
-  }
-
- const handleSubmit = () => {
-    setGoals((currentGoals) => [...currentGoals, enteredGoal]);
-  }
+ 
+  const handleSubmit = (enteredGoal) => {
+    setGoals((currentGoals) => [
+      ...currentGoals,
+      { text: enteredGoal, key: Math.random().toString() }, 
+    ]);
+    
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.adder}>
-        <TextInput style={styles.input} placeholder="Enter your goal"
-        onChangeText={handleInputChange}
-        
-        
-        />
-        <Button title="Add" onPress={handleSubmit}/>
-      </View>
+    <SafeAreaView style={styles.container}>
+   
+      <GoalInput onAddGoal={handleSubmit}  />
       <View style={styles.viewer}>
       <Text>My Goals</Text>
 
-      <FlatList data={goals} renderItem={(itemData) => {
-        
-        return (
-        <View style={styles.goalHolder}>
-        <Text 
-        key={itemData.index}
-         style={styles.goalText}
-        >
-          {itemData.item}
-          </Text>
-      </View>
-      );
-    }}/>
+      <FlatList
+  data={goals}
+  renderItem={({ item }) => {
+    return <GoalItem text={item.text} key={item.key} />;
+  }}
+  keyExtractor={(item) => item.key}
+/>
     </View>
-    </View>
+   
+    </SafeAreaView>
   );
 }
 
@@ -53,13 +46,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  adder:{
-    flex: 1,
-    flexDirection: 'row',
-    
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
+ 
   viewer:{
     flex: 5,
     
@@ -69,22 +56,6 @@ const styles = StyleSheet.create({
     margin : 10,
     width: '90%',
   },
-  input:{
-    borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 5,
-    padding: 5,
-    width: '70%',
-    marginRight: 10,
-  },
-  goalHolder: {
-    padding: 10,
-    margin: 10,
-    backgroundColor: 'navy',
-    borderRadius: 5,
-    width: '100%',
-  },
-  goalText:{
-    color: 'white',
-  }
+  
+
 });
